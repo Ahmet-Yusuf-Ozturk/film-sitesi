@@ -1,39 +1,41 @@
 import React, { useState } from 'react';
-import { movies } from './sahteVeri.js';
-import { Switch, Route } from 'react-router-dom';
 import Film from './components/Film.jsx';
 import FilmListesi from './components/FilmListesi.jsx';
-
+import { Link, Route } from 'react-router-dom';
+import { movies } from './sahteVeri.js';
 import KaydedilenlerListesi from './components/KaydedilenlerListesi';
+import { Switch } from 'react-router-dom/cjs/react-router-dom.min.js';
 
 export default function App() {
-  /* Görev: 1
-  kaydedilmiş filmler ve film listesi için 2 tane state tanımlayın.
-  film listesini sahteVeri'den alın.
-  */
-  const [filmler, setFilmler] = useState(movies);
-  const [kaydedilmişFilmler, setKaydedilmişFilmler] = useState([]);
+  const [filmListesi, setFilmListesi] = useState(movies);
+  const [savedMovies, setSavedMovies] = useState([]);
 
   const KaydedilenlerListesineEkle = (movie) => {
-    /* Görev: 2
-    kaydedilmiş film listesine eklemek için bir click handle fonksiyonu yazın.
-    aynı filmi 2. kez eklememeli.
-    Kaydet butonunun olduğu component'e prop olarak gönderin.
-    */
-    if (!kaydedilmişFilmler.find((film) => film.id === movie.id)) {
-      setKaydedilmişFilmler([...kaydedilmişFilmler, movie]);
+    if (!savedMovies.find((film) => film.id === movie.id)) {
+      setSavedMovies([...savedMovies, movie]);
+    }
+  };
+
+  const KaydedilenlerListesindenKaldır = (movie) => {
+    if (savedMovies.find((film) => film.id === movie.id)) {
+      const filteredList = savedMovies.filter((film) => film.id !== movie.id);
+      setSavedMovies(filteredList);
     }
   };
 
   return (
     <div>
-      <KaydedilenlerListesi list={kaydedilmişFilmler} />
+      <KaydedilenlerListesi list={savedMovies} />
       <Switch>
         <Route exact path="/">
-          <FilmListesi movies={filmler} />
+          <FilmListesi movies={filmListesi} />
         </Route>
         <Route path="/filmler/:id">
-          <Film movies={filmler} onClick={KaydedilenlerListesineEkle} />
+          <Film
+            movies={filmListesi}
+            clickHandler={KaydedilenlerListesineEkle}
+            kaldır={KaydedilenlerListesindenKaldır}
+          />
         </Route>
       </Switch>
     </div>
